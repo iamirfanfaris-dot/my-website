@@ -5,163 +5,241 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Car Game - Irfan Games</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body, html {
       margin: 0;
       padding: 0;
-      height: 100%;
       width: 100%;
+      height: 100%;
       background-color: #1a1a1a;
       color: #ffffff;
       font-family: Arial, sans-serif;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
-    .top-bar {
-      padding: 15px 20px;
-      background-color: #111;
-      border-bottom: 1px solid #333;
+    
+    /* TOP NAVIGATION */
+    .header-bar {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 10;
     }
     .back-btn {
       display: inline-block;
       border: 2px solid #00ffcc;
       color: #00ffcc;
-      background: transparent;
-      padding: 8px 16px;
+      background: #1a1a1a;
+      padding: 8px 18px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
-      transition: 0.2s;
+      font-size: 14px;
+      cursor: pointer;
     }
     .back-btn:hover {
       background-color: #00ffcc;
       color: #1a1a1a;
     }
-    iframe {
+
+    /* MAIN GAME DISPLAY AREA */
+    .game-viewport {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
       width: 100%;
-      height: calc(100vh - 65px);
+      height: 100%;
+    }
+
+    /* CLICK TO PLAY SCREEN */
+    .overlay-screen {
+      position: absolute;
+      inset: 0;
+      background-color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 5;
+    }
+    .click-to-play-btn {
+      background: #000000;
+      color: #ffffff;
+      border: 2px solid #6b21a8;
+      padding: 16px 36px;
+      font-size: 22px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(107, 33, 168, 0.5);
+      letter-spacing: 1px;
+    }
+    .click-to-play-btn:hover {
+      background: #6b21a8;
+      color: #ffffff;
+    }
+
+    /* CAR GAME CONTAINER */
+    #gameCard {
+      display: none;
+      text-align: center;
+      background: #0f172a;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    canvas {
+      background: #1e293b;
+      border: 2px solid #38bdf8;
+      border-radius: 8px;
+      display: block;
+      margin: 10px auto;
+    }
+    .start-game-btn {
+      background: #38bdf8;
+      color: #0f172a;
       border: none;
+      padding: 10px 24px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .start-game-btn:hover {
+      background: #7dd3fc;
+    }
+
+    /* BOTTOM FULLSCREEN BUTTON */
+    .fullscreen-bar {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10;
+    }
+    .fullscreen-btn {
+      background: #000000;
+      color: #ffffff;
+      border: 2px solid #6b21a8;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .fullscreen-btn:hover {
+      background: #6b21a8;
     }
   </style>
-  <script src="https://apis.google.com/js/api.js?checkCookie=1" async></script>
 </head>
 <body>
 
-  <!-- TOP NAVIGATION BAR -->
-  <div class="top-bar">
+  <!-- TOP LEFT BACK BUTTON -->
+  <div class="header-bar">
     <a href="index.html" class="back-btn">&larr; Back to Irfan Games</a>
   </div>
 
-  <!-- EMBED FRAME CONTAINER -->
-  <iframe id="userHtmlFrame" frameborder="0" scrolling="yes"></iframe>
+  <!-- CENTER GAME AREA -->
+  <div class="game-viewport" id="gameViewport">
+    
+    <!-- CLICK TO PLAY OVERLAY -->
+    <div class="overlay-screen" id="overlayScreen">
+      <button class="click-to-play-btn" onclick="launchGame()">CLICK TO PLAY</button>
+    </div>
+
+    <!-- STREET RACER GAME DISPLAY -->
+    <div id="gameCard">
+      <h3 style="margin-top: 0; color: #38bdf8;">🏎️ Street Racer</h3>
+      <canvas id="streetRacerCanvas" width="300" height="400"></canvas>
+      <p style="font-size: 13px; color: #94a3b8;">Use <b>Left & Right Arrow Keys</b> to steer!</p>
+      <button class="start-game-btn" onclick="startStreetRacer()">Start Race</button>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM RIGHT FULLSCREEN BUTTON -->
+  <div class="fullscreen-bar">
+    <button class="fullscreen-btn" onclick="toggleFullscreen()">FULLSCREEN</button>
+  </div>
 
   <script>
-    // STREET RACER GAME INNER CONTENT
-    const gameHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body {
-            background-color: #0f172a;
-            color: #ffffff;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-          }
-          .game-card {
-            text-align: center;
-            background: #0f172a;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-          }
-          canvas {
-            background: #1e293b;
-            border: 2px solid #38bdf8;
-            border-radius: 8px;
-            display: block;
-            margin: 10px auto;
-          }
-          button {
-            background: #38bdf8;
-            color: #0f172a;
-            border: none;
-            padding: 10px 24px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 15px;
-          }
-          button:hover {
-            background: #7dd3fc;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="game-card">
-          <h3 style="margin-top:0; color:#38bdf8;">🏎️ Street Racer</h3>
-          <canvas id="streetRacerCanvas" width="300" height="400"></canvas>
-          <p style="font-size:13px; color:#94a3b8;">Use <b>Left & Right Arrow Keys</b> to steer!</p>
-          <button onclick="startStreetRacer()">Start Game</button>
-        </div>
+    function launchGame() {
+      document.getElementById("overlayScreen").style.display = "none";
+      document.getElementById("gameCard").style.display = "block";
+      startStreetRacer();
+    }
 
-        <script>
-          let racerLoop;
-          function startStreetRacer() {
-            const canvas = document.getElementById("streetRacerCanvas");
-            const ctx = canvas.getContext("2d");
+    function toggleFullscreen() {
+      const elem = document.getElementById("gameViewport");
+      if (!document.fullscreenElement) {
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
 
-            let carX = 130;
-            let obstacles = [];
-            let score = 0;
-            let isGameOver = false;
+    let racerLoop;
+    function startStreetRacer() {
+      const canvas = document.getElementById("streetRacerCanvas");
+      const ctx = canvas.getContext("2d");
 
-            window.onkeydown = function(e) {
-              if (e.key === "ArrowLeft" && carX > 20) carX -= 30;
-              if (e.key === "ArrowRight" && carX < 240) carX += 30;
-            };
+      let carX = 130;
+      let obstacles = [];
+      let score = 0;
+      let isGameOver = false;
 
-            if (racerLoop) clearInterval(racerLoop);
+      window.onkeydown = function(e) {
+        if (e.key === "ArrowLeft" && carX > 20) carX -= 30;
+        if (e.key === "ArrowRight" && carX < 240) carX += 30;
+      };
 
-            racerLoop = setInterval(() => {
-              if (isGameOver) return;
+      if (racerLoop) clearInterval(racerLoop);
 
-              ctx.fillStyle = "#1e293b";
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
+      racerLoop = setInterval(() => {
+        if (isGameOver) return;
 
-              ctx.strokeStyle = "#475569";
-              ctx.setLineDash([15, 15]);
-              ctx.beginPath();
-              ctx.moveTo(100, 0); ctx.lineTo(100, 400);
-              ctx.moveTo(200, 0); ctx.lineTo(200, 400);
-              ctx.stroke();
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-              ctx.fillStyle = "#38bdf8";
-              ctx.fillRect(carX, canvas.height - 70, 40, 60);
+        ctx.strokeStyle = "#475569";
+        ctx.setLineDash([15, 15]);
+        ctx.beginPath();
+        ctx.moveTo(100, 0); ctx.lineTo(100, 400);
+        ctx.moveTo(200, 0); ctx.lineTo(200, 400);
+        ctx.stroke();
 
-              if (Math.random() < 0.035) {
-                let laneX = [20, 90, 160, 230][Math.floor(Math.random() * 4)];
-                obstacles.push({ x: laneX, y: -60 });
-              }
+        ctx.fillStyle = "#38bdf8";
+        ctx.fillRect(carX, canvas.height - 70, 40, 60);
 
-              ctx.fillStyle = "#f43f5e";
-              for (let i = obstacles.length - 1; i >= 0; i--) {
-                obstacles[i].y += 5;
-                ctx.fillRect(obstacles[i].x, obstacles[i].y, 40, 60);
+        if (Math.random() < 0.035) {
+          let laneX = [20, 90, 160, 230][Math.floor(Math.random() * 4)];
+          obstacles.push({ x: laneX, y: -60 });
+        }
 
-                if (
-                  obstacles[i].y > canvas.height - 120 &&
-                  obstacles[i].y < canvas.height - 10 &&
-                  Math.abs(obstacles[i].x - carX) < 30
-                ) {
-                  isGameOver = true;
-                  ctx.fillStyle = "#ffffff";
-                  ctx.font = "bold 22px sans-serif";
-                  ctx.textAlign = "center";
-                  ctx.fillText("GAME OVER", canvas.width / 2, 200);
-                  ctx.font = "14px sans-serif";
-                  ctx.fillText
+        ctx.fillStyle = "#f43f5e";
+        for (let i = obstacles.length - 1; i >= 0; i--) {
+          obstacles[i].y += 5;
+          ctx.fillRect(obstacles[i].x, obstacles[i].y, 40, 60);
+
+          if (
+            obstacles[i].y > canvas.height - 120 &&
+            obstacles[i].y < canvas.height - 10 &&
+            Math.abs(obstacles[i].x - carX) < 30
+          ) {
+            isGameOver = true;
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 22px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText("GAME OVER", canvas.width / 2, 200);
+            ctx.font = "14px sans-serif";
+            ctx.fillText("Final Score: " + score,
