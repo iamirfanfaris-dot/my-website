@@ -168,6 +168,7 @@
     let racerLoop;
     function startStreetRacer() {
       const canvas = document.getElementById("streetRacerCanvas");
+      if (!canvas) return;
       const ctx = canvas.getContext("2d");
 
       let carX = 130;
