@@ -1,0 +1,88 @@
+<!-- START OF CAR GAME FOR PAGE 1 -->
+<div style="text-align: center; background: #0f172a; padding: 20px; border-radius: 12px; color: #ffffff; font-family: sans-serif; max-width: 360px; margin: 20px auto; border: 1px solid #334155;">
+  <h3 style="margin-top: 0; color: #38bdf8;">🏎️ Street Racer</h3>
+  <canvas id="streetRacerCanvas" width="300" height="400" style="background: #1e293b; border: 2px solid #38bdf8; border-radius: 8px; display: block; margin: 10px auto;"></canvas>
+  <p style="font-size: 13px; color: #94a3b8;">Use <b>Left & Right Arrow Keys</b> to steer!</p>
+  <button onclick="startStreetRacer()" style="background: #38bdf8; color: #0f172a; border: none; padding: 10px 24px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 15px;">Start Game</button>
+</div>
+
+<script>
+let racerLoop;
+function startStreetRacer() {
+  const canvas = document.getElementById("streetRacerCanvas");
+  const ctx = canvas.getContext("2d");
+
+  let carX = 130;
+  let obstacles = [];
+  let score = 0;
+  let isGameOver = false;
+
+  window.onkeydown = function(e) {
+    if (e.key === "ArrowLeft" && carX > 20) carX -= 30;
+    if (e.key === "ArrowRight" && carX < 240) carX += 30;
+  };
+
+  if (racerLoop) clearInterval(racerLoop);
+
+  racerLoop = setInterval(() => {
+    if (isGameOver) return;
+
+    // Clear background
+    ctx.fillStyle = "#1e293b";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw road markings
+    ctx.strokeStyle = "#475569";
+    ctx.setLineDash([15, 15]);
+    ctx.beginPath();
+    ctx.moveTo(100, 0); ctx.lineTo(100, 400);
+    ctx.moveTo(200, 0); ctx.lineTo(200, 400);
+    ctx.stroke();
+
+    // Draw player car
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillRect(carX, canvas.height - 70, 40, 60);
+
+    // Spawn traffic
+    if (Math.random() < 0.035) {
+      let laneX = [20, 90, 160, 230][Math.floor(Math.random() * 4)];
+      obstacles.push({ x: laneX, y: -60 });
+    }
+
+    // Move & draw traffic
+    ctx.fillStyle = "#f43f5e";
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+      obstacles[i].y += 5;
+      ctx.fillRect(obstacles[i].x, obstacles[i].y, 40, 60);
+
+      // Collision check
+      if (
+        obstacles[i].y > canvas.height - 120 &&
+        obstacles[i].y < canvas.height - 10 &&
+        Math.abs(obstacles[i].x - carX) < 30
+      ) {
+        isGameOver = true;
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 22px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("GAME OVER", canvas.width / 2, 200);
+        ctx.font = "14px sans-serif";
+        ctx.fillText("Final Score: " + score, canvas.width / 2, 230);
+        clearInterval(racerLoop);
+      }
+
+      if (obstacles[i].y > canvas.height) {
+        obstacles.splice(i, 1);
+        score += 10;
+      }
+    }
+
+    // Draw Score
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 14px sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("Score: " + score, 15, 25);
+  }, 30);
+}
+</script>
+<!-- END OF CAR GAME -->
