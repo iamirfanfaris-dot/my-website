@@ -3,163 +3,246 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Game 3 - Irfan Games</title>
+  <title>Space Defender - Irfan Games</title>
   <style>
-    body, html { 
-      margin: 0; 
-      padding: 0; 
-      overflow: hidden; 
-      height: 100%; 
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
       background-color: #1a1a1a;
+      color: #ffffff;
       font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
-    #back-link {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      z-index: 1003;
+    
+    /* TOP NAVIGATION */
+    .top-bar {
+      padding: 15px 20px;
+    }
+    .back-btn {
+      display: inline-block;
+      border: 2px solid #00ffcc;
       color: #00ffcc;
+      background: transparent;
+      padding: 8px 18px;
+      border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
-      background: rgba(0,0,0,0.8);
-      padding: 10px 15px;
-      border-radius: 8px;
-      border: 1px solid #00ffcc;
+      font-size: 14px;
     }
-    #back-link:hover {
-      background: #00ffcc;
-      color: #000;
+    .back-btn:hover {
+      background-color: #00ffcc;
+      color: #1a1a1a;
     }
-    #container {
-      width: 100%;
-      height: 100vh;
+
+    /* CENTER AREA */
+    .main-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: relative;
     }
-    .play-button { 
-      padding: 20px 40px; 
-      background: #000; 
-      color: #fff; 
-      border: 2px solid #4a148c; 
-      border-radius: 10px; 
-      font: bold 24px Arial; 
-      cursor: pointer; 
-      position: absolute; 
-      top: 50%; 
-      left: 50%; 
-      transform: translate(-50%, -50%); 
-      z-index: 1001; 
+
+    /* CLICK TO PLAY BUTTON */
+    .click-to-play-btn {
+      background: #000000;
+      color: #ffffff;
+      border: 2px solid #6b21a8;
+      padding: 16px 36px;
+      font-size: 22px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(107, 33, 168, 0.5);
     }
-    .play-button:hover { background: #4a148c; }
-    .fullscreen-button { 
-      padding: 10px 15px; 
-      background: #000; 
-      color: #fff; 
-      border: 2px solid #4a148c; 
-      border-radius: 5px; 
-      font: bold 14px Arial; 
-      cursor: pointer; 
-      position: fixed; 
-      bottom: 20px; 
-      right: 20px; 
-      z-index: 1002; 
+    .click-to-play-btn:hover {
+      background: #6b21a8;
     }
-    .fullscreen-button:hover { background: #4a148c; }
+
+    /* GAME CONTAINER */
+    #gameCard {
+      display: none;
+      text-align: center;
+      background: #0f172a;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    canvas {
+      background: #020617;
+      border: 2px solid #a855f7;
+      border-radius: 8px;
+      display: block;
+      margin: 10px auto;
+    }
+    .start-game-btn {
+      background: #a855f7;
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .start-game-btn:hover {
+      background: #c084fc;
+    }
+
+    /* BOTTOM RIGHT FULLSCREEN BUTTON */
+    .fullscreen-bar {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+    }
+    .fullscreen-btn {
+      background: #000000;
+      color: #ffffff;
+      border: 2px solid #6b21a8;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .fullscreen-btn:hover {
+      background: #6b21a8;
+    }
   </style>
 </head>
 <body>
 
-  <!-- BACK BUTTON -->
-  <a id="back-link" href="index.html">← Back to Irfan Games</a>
+  <!-- TOP LEFT BACK BUTTON -->
+  <div class="top-bar">
+    <a href="page2.html" class="back-btn">&larr; Back to Page 2</a>
+  </div>
 
-  <!-- GAME CONTAINER -->
-  <div id="container">
-    <iframe id="fr" width="100%" height="100%" frameborder="0" allowfullscreen=""></iframe>
-    <button class="play-button" type="button" onclick="PlayTo(this)">CLICK TO PLAY</button>
-    <button class="fullscreen-button" type="button" onclick="openFullscreen()">FULLSCREEN</button>
+  <!-- CENTER GAME AREA -->
+  <div class="main-content" id="viewport">
+    
+    <!-- CLICK TO PLAY BUTTON -->
+    <button class="click-to-play-btn" id="playBtn" onclick="launchGame()">CLICK TO PLAY</button>
+
+    <!-- GAME CANVAS -->
+    <div id="gameCard">
+      <h3 style="margin-top: 0; color: #a855f7;">🚀 Space Defender</h3>
+      <canvas id="spaceCanvas" width="300" height="400"></canvas>
+      <p style="font-size: 13px; color: #94a3b8;">Use <b>Left & Right Arrows</b> to move, <b>Spacebar</b> to shoot!</p>
+      <button class="start-game-btn" onclick="startSpaceGame()">Start Defender</button>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM RIGHT FULLSCREEN BUTTON -->
+  <div class="fullscreen-bar">
+    <button class="fullscreen-btn" onclick="toggleFullscreen()">FULLSCREEN</button>
   </div>
 
   <script>
-    const DB_NAME = 'GameCacheDB';
-    const STORE_NAME = 'GameFiles';
-    const CACHE_DURATION = 90 * 24 * 60 * 60 * 1000;
-    const FILE_URL = 'https://cdn.jsdelivr.net/gh/z799gs/c2@main/11.xml';
-
-    function openDB() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 1);
-        request.onupgradeneeded = (event) => {
-          const db = event.target.result;
-          db.createObjectStore(STORE_NAME, { keyPath: 'url' });
-        };
-        request.onsuccess = (event) => resolve(event.target.result);
-        request.onerror = (event) => reject(event.target.error);
-      });
+    function launchGame() {
+      document.getElementById("playBtn").style.display = "none";
+      document.getElementById("gameCard").style.display = "block";
+      startSpaceGame();
     }
 
-    async function saveToCache(url, content) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
-        const request = store.put({ url: url, content: content, timestamp: Date.now() });
-        request.onsuccess = () => resolve();
-        request.onerror = () => reject(new Error('Cache error'));
-      });
+    function toggleFullscreen() {
+      const elem = document.getElementById("viewport");
+      if (!document.fullscreenElement) {
+        if (elem.requestFullscreen) elem.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
     }
 
-    async function getFileFromCache(url) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readonly');
-        const store = transaction.objectStore(STORE_NAME);
-        const request = store.get(url);
-        request.onsuccess = async (event) => {
-          const data = event.target.result;
-          if (data && (Date.now() - data.timestamp) < CACHE_DURATION) {
-            resolve(data.content);
-          } else {
-            try {
-              const response = await fetch(url);
-              const text = await response.text();
-              await saveToCache(url, text);
-              resolve(text);
-            } catch (err) {
-              reject(err);
+    let gameLoop;
+    function startSpaceGame() {
+      const canvas = document.getElementById("spaceCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let shipX = 135;
+      let bullets = [];
+      let enemies = [];
+      let score = 0;
+      let isGameOver = false;
+
+      window.onkeydown = function(e) {
+        if (e.key === "ArrowLeft" && shipX > 10) shipX -= 20;
+        if (e.key === "ArrowRight" && shipX < 260) shipX += 20;
+        if (e.key === " " || e.code === "Space") {
+          bullets.push({ x: shipX + 12, y: 350 });
+        }
+      };
+
+      if (gameLoop) clearInterval(gameLoop);
+
+      gameLoop = setInterval(() => {
+        if (isGameOver) return;
+
+        ctx.fillStyle = "#020617";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Player Ship
+        ctx.fillStyle = "#a855f7";
+        ctx.fillRect(shipX, 360, 30, 20);
+
+        // Bullets
+        ctx.fillStyle = "#facc15";
+        for (let b = bullets.length - 1; b >= 0; b--) {
+          bullets[b].y -= 7;
+          ctx.fillRect(bullets[b].x, bullets[b].y, 6, 12);
+          if (bullets[b].y < 0) bullets.splice(b, 1);
+        }
+
+        // Spawn Enemies
+        if (Math.random() < 0.04) {
+          enemies.push({ x: Math.random() * 260, y: -20 });
+        }
+
+        // Enemies
+        ctx.fillStyle = "#ef4444";
+        for (let e = enemies.length - 1; e >= 0; e--) {
+          enemies[e].y += 3;
+          ctx.fillRect(enemies[e].x, enemies[e].y, 25, 25);
+
+          // Check hit by bullet
+          for (let b = bullets.length - 1; b >= 0; b--) {
+            if (
+              bullets[b] &&
+              bullets[b].x > enemies[e].x &&
+              bullets[b].x < enemies[e].x + 25 &&
+              bullets[b].y > enemies[e].y &&
+              bullets[b].y < enemies[e].y + 25
+            ) {
+              enemies.splice(e, 1);
+              bullets.splice(b, 1);
+              score += 20;
+              break;
             }
           }
-        };
-        request.onerror = () => reject(new Error('DB error'));
-      });
-    }
 
-    function PlayTo(button) {
-      const iframe = document.getElementById("fr");
-      getFileFromCache(FILE_URL).then((text) => {
-        iframe.contentDocument.open();
-        iframe.contentDocument.write(text);
-        iframe.contentDocument.close();
-        iframe.style.display = "block";
-        button.style.display = "none";
-      }).catch((err) => {
-        console.error('Error:', err);
-        alert('Oyun yüklenemedi.');
-      });
-    }
-
-    function openFullscreen() {
-      getFileFromCache(FILE_URL).then((text) => {
-        const newWindow = window.open("", "_blank");
-        if (newWindow) {
-          newWindow.document.open();
-          newWindow.document.write(text);
-          newWindow.document.close();
-        } else {
-          alert('Tam ekran açılamadı.');
+          if (enemies[e] && enemies[e].y > 360) {
+            isGameOver = true;
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 22px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText("GAME OVER", canvas.width / 2, 200);
+            ctx.font = "14px sans-serif";
+            ctx.fillText("Score: " + score, canvas.width / 2, 230);
+            clearInterval(gameLoop);
+          }
         }
-      }).catch((err) => {
-        console.error('Error:', err);
-        alert('Tam ekran yüklenemedi.');
-      });
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 14px sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("Score: " + score, 15, 25);
+      }, 30);
     }
   </script>
 </body>
