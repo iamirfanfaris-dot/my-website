@@ -1,4 +1,4 @@
-<!-- START OF CAR GAME FOR PAGE 1 -->
+<!-- START OF STREET RACER GAME -->
 <div style="text-align: center; background: #0f172a; padding: 20px; border-radius: 12px; color: #ffffff; font-family: sans-serif; max-width: 360px; margin: 20px auto; border: 1px solid #334155;">
   <h3 style="margin-top: 0; color: #38bdf8;">🏎️ Street Racer</h3>
   <canvas id="streetRacerCanvas" width="300" height="400" style="background: #1e293b; border: 2px solid #38bdf8; border-radius: 8px; display: block; margin: 10px auto;"></canvas>
@@ -27,11 +27,9 @@ function startStreetRacer() {
   racerLoop = setInterval(() => {
     if (isGameOver) return;
 
-    // Clear background
     ctx.fillStyle = "#1e293b";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw road markings
     ctx.strokeStyle = "#475569";
     ctx.setLineDash([15, 15]);
     ctx.beginPath();
@@ -39,23 +37,19 @@ function startStreetRacer() {
     ctx.moveTo(200, 0); ctx.lineTo(200, 400);
     ctx.stroke();
 
-    // Draw player car
     ctx.fillStyle = "#38bdf8";
     ctx.fillRect(carX, canvas.height - 70, 40, 60);
 
-    // Spawn traffic
     if (Math.random() < 0.035) {
       let laneX = [20, 90, 160, 230][Math.floor(Math.random() * 4)];
       obstacles.push({ x: laneX, y: -60 });
     }
 
-    // Move & draw traffic
     ctx.fillStyle = "#f43f5e";
     for (let i = obstacles.length - 1; i >= 0; i--) {
       obstacles[i].y += 5;
       ctx.fillRect(obstacles[i].x, obstacles[i].y, 40, 60);
 
-      // Collision check
       if (
         obstacles[i].y > canvas.height - 120 &&
         obstacles[i].y < canvas.height - 10 &&
@@ -77,7 +71,6 @@ function startStreetRacer() {
       }
     }
 
-    // Draw Score
     ctx.fillStyle = "#ffffff";
     ctx.font = "bold 14px sans-serif";
     ctx.textAlign = "left";
@@ -85,4 +78,4 @@ function startStreetRacer() {
   }, 30);
 }
 </script>
-<!-- END OF CAR GAME -->
+<!-- END OF STREET RACER GAME -->
