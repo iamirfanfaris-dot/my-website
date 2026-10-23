@@ -5,67 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Car Game - Irfan Games</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-    body, html {
+    body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background-color: #1a1a1a;
       color: #ffffff;
       font-family: Arial, sans-serif;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
     
     /* TOP NAVIGATION */
-    .header-bar {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      z-index: 10;
+    .top-bar {
+      padding: 15px 20px;
     }
     .back-btn {
       display: inline-block;
       border: 2px solid #00ffcc;
       color: #00ffcc;
-      background: #1a1a1a;
+      background: transparent;
       padding: 8px 18px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
       font-size: 14px;
-      cursor: pointer;
     }
     .back-btn:hover {
       background-color: #00ffcc;
       color: #1a1a1a;
     }
 
-    /* MAIN GAME DISPLAY AREA */
-    .game-viewport {
+    /* CENTER AREA */
+    .main-content {
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
-      width: 100%;
-      height: 100%;
     }
 
-    /* CLICK TO PLAY SCREEN */
-    .overlay-screen {
-      position: absolute;
-      inset: 0;
-      background-color: #1a1a1a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 5;
-    }
+    /* CLICK TO PLAY BUTTON */
     .click-to-play-btn {
       background: #000000;
       color: #ffffff;
@@ -76,11 +58,9 @@
       border-radius: 10px;
       cursor: pointer;
       box-shadow: 0 0 15px rgba(107, 33, 168, 0.5);
-      letter-spacing: 1px;
     }
     .click-to-play-btn:hover {
       background: #6b21a8;
-      color: #ffffff;
     }
 
     /* CAR GAME CONTAINER */
@@ -114,12 +94,11 @@
       background: #7dd3fc;
     }
 
-    /* BOTTOM FULLSCREEN BUTTON */
+    /* BOTTOM RIGHT FULLSCREEN BUTTON */
     .fullscreen-bar {
-      position: absolute;
+      position: fixed;
       bottom: 20px;
       right: 20px;
-      z-index: 10;
     }
     .fullscreen-btn {
       background: #000000;
@@ -136,20 +115,18 @@
     }
   </style>
 </head>
-<body>
+<body id="pageBody">
 
   <!-- TOP LEFT BACK BUTTON -->
-  <div class="header-bar">
+  <div class="top-bar">
     <a href="index.html" class="back-btn">&larr; Back to Irfan Games</a>
   </div>
 
   <!-- CENTER GAME AREA -->
-  <div class="game-viewport" id="gameViewport">
+  <div class="main-content" id="viewport">
     
-    <!-- CLICK TO PLAY OVERLAY -->
-    <div class="overlay-screen" id="overlayScreen">
-      <button class="click-to-play-btn" onclick="launchGame()">CLICK TO PLAY</button>
-    </div>
+    <!-- CLICK TO PLAY BUTTON -->
+    <button class="click-to-play-btn" id="playBtn" onclick="launchGame()">CLICK TO PLAY</button>
 
     <!-- STREET RACER GAME DISPLAY -->
     <div id="gameCard">
@@ -168,13 +145,13 @@
 
   <script>
     function launchGame() {
-      document.getElementById("overlayScreen").style.display = "none";
+      document.getElementById("playBtn").style.display = "none";
       document.getElementById("gameCard").style.display = "block";
       startStreetRacer();
     }
 
     function toggleFullscreen() {
-      const elem = document.getElementById("gameViewport");
+      const elem = document.getElementById("viewport");
       if (!document.fullscreenElement) {
         if (elem.requestFullscreen) {
           elem.requestFullscreen();
@@ -242,4 +219,22 @@
             ctx.textAlign = "center";
             ctx.fillText("GAME OVER", canvas.width / 2, 200);
             ctx.font = "14px sans-serif";
-            ctx.fillText("Final Score: " + score,
+            ctx.fillText("Final Score: " + score, canvas.width / 2, 230);
+            clearInterval(racerLoop);
+          }
+
+          if (obstacles[i].y > canvas.height) {
+            obstacles.splice(i, 1);
+            score += 10;
+          }
+        }
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 14px sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("Score: " + score, 15, 25);
+      }, 30);
+    }
+  </script>
+</body>
+</html>
